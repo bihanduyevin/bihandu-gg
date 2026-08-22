@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
+/* =========================================================
+   BIHANDU.GG — GLOBAL DESIGN SYSTEM
+   ========================================================= */
+
 :root {
   --background: #fbfbfb;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
 
   --surface: #ffffff;
-  --surface-hover: #f3f3f5;
+  --surface-hover: #f3f4f6;
 
   --border: #e5e5e5;
-  --border-hover: #d4d4d8;
+  --border-hover: #d1d5db;
 
   --accent-primary: #6d28d9;
   --accent-secondary: #4338ca;
-  --accent-glow: #7c3aed;
+  --accent-glow: #8b5cf6;
 
   --muted: #737373;
 }
@@ -37,13 +41,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* ---------------------------------
-   Base
---------------------------------- */
+/* =========================================================
+   BASE
+   ========================================================= */
 
 * {
   border-color: var(--border);
@@ -54,12 +59,12 @@ html {
 }
 
 body {
-  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
   transition:
     background-color 300ms ease,
     color 300ms ease,
@@ -71,9 +76,18 @@ body {
   color: #ffffff;
 }
 
-/* ---------------------------------
-   Scrollbar
---------------------------------- */
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -92,26 +106,49 @@ body {
   background: var(--accent-primary);
 }
 
-/* ---------------------------------
-   Focus
---------------------------------- */
+/* =========================================================
+   GIS / SPATIAL GRID
+   ========================================================= */
 
-:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 3px;
+.bg-spatial-grid {
+  background-size: 40px 40px;
+
+  background-image:
+    linear-gradient(
+      to right,
+      var(--border) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      var(--border) 1px,
+      transparent 1px
+    );
+
+  mask-image:
+    radial-gradient(
+      circle at center,
+      black,
+      transparent 80%
+    );
+
+  -webkit-mask-image:
+    radial-gradient(
+      circle at center,
+      black,
+      transparent 80%
+    );
 }
 
-/* =================================
-   HERO ANIMATIONS
-================================= */
-
-/* Staggered text reveal */
+/* =========================================================
+   HERO — STAGGERED TEXT REVEAL
+   ========================================================= */
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
+    transform: translateY(20px) scale(0.98);
+    filter: blur(2px);
   }
 
   to {
@@ -123,35 +160,35 @@ body {
 
 .animate-fade-in-up {
   opacity: 0;
-  animation: fadeInUp 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  animation:
+    fadeInUp
+    1.2s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 
-/* Large background drift */
+/* =========================================================
+   HERO — FLOWING GIS LINES
+   ========================================================= */
 
 @keyframes flowDrift {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
-  30% {
-    transform: translate3d(1.5%, 1%, 0) scale(1.01);
+  33% {
+    transform: translate3d(1%, 1.5%, 0) scale(1.01);
   }
 
-  65% {
-    transform: translate3d(-1%, 2%, 0) scale(0.99);
+  66% {
+    transform: translate3d(-0.5%, 2%, 0) scale(0.99);
   }
 
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
 }
-
-.animate-flow-drift {
-  animation: flowDrift 22s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-/* Contour line movement */
 
 @keyframes flowDash {
   to {
@@ -159,45 +196,82 @@ body {
   }
 }
 
-.animate-flow-dash {
-  stroke-dasharray: 160 300;
-  animation: flowDash 38s linear infinite;
-  will-change: stroke-dashoffset;
+@keyframes flowDashReverse {
+  to {
+    stroke-dashoffset: 1000;
+  }
 }
-
-/* Bright moving energy pulse */
 
 @keyframes energyPulse {
   0% {
-    stroke-dashoffset: 1100;
+    stroke-dashoffset: 1000;
     opacity: 0;
   }
 
   10% {
-    opacity: 0.25;
+    opacity: 1;
   }
 
-  45% {
-    opacity: 0.9;
-  }
-
-  80% {
-    opacity: 0.3;
+  90% {
+    opacity: 1;
   }
 
   100% {
-    stroke-dashoffset: -1100;
+    stroke-dashoffset: -1000;
     opacity: 0;
   }
 }
 
-.animate-energy-pulse {
-  stroke-dasharray: 180 920;
-  animation: energyPulse 14s linear infinite;
-  will-change: stroke-dashoffset, opacity;
+.animate-flow-drift {
+  animation:
+    flowDrift
+    18s
+    ease-in-out
+    infinite
+    alternate;
+
+  will-change: transform;
 }
 
-/* Scroll indicator */
+.animate-flow-dash {
+  stroke-dasharray: 180 320;
+
+  animation:
+    flowDash
+    42s
+    linear
+    infinite;
+
+  will-change: stroke-dashoffset;
+}
+
+.animate-flow-dash-reverse {
+  stroke-dasharray: 180 320;
+
+  animation:
+    flowDashReverse
+    36s
+    linear
+    infinite;
+
+  will-change: stroke-dashoffset;
+}
+
+.animate-energy-pulse {
+  stroke-dasharray: 150 850;
+
+  animation:
+    energyPulse
+    15s
+    linear
+    infinite;
+
+  will-change: stroke-dashoffset;
+}
+
+/* =========================================================
+   HERO — SCROLL INDICATOR
+   ========================================================= */
 
 @keyframes softBounce {
   0%,
@@ -206,34 +280,48 @@ body {
   }
 
   50% {
-    transform: translateY(6px);
+    transform: translateY(5px);
   }
 }
 
 .animate-soft-bounce {
-  animation: softBounce 2.4s ease-in-out infinite;
+  animation:
+    softBounce
+    2.5s
+    ease-in-out
+    infinite;
 }
 
-/* Button light sweep */
+/* =========================================================
+   HERO — BUTTON LIGHT SWEEP
+   ========================================================= */
 
 .btn-glow-effect {
   position: relative;
   overflow: hidden;
-  isolation: isolate;
 }
 
 .btn-glow-effect::before {
   content: "";
+
   position: absolute;
-  inset: 0 auto 0 -100%;
+
+  top: 0;
+  left: -100%;
+
   width: 50%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
+
   transition: left 600ms ease;
+
   pointer-events: none;
 }
 
@@ -241,15 +329,176 @@ body {
   left: 100%;
 }
 
-/* Subtle pulse used for small light points */
+/* =========================================================
+   ABOUT — WORD BY WORD REVEAL
+   ========================================================= */
 
-.animate-pulse {
-  animation-timing-function: ease-in-out;
+.about-word {
+  display: inline-block;
+
+  opacity: 0;
+
+  transform:
+    translateY(24px);
+
+  filter: blur(6px);
+
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ---------------------------------
-   Reduced motion
---------------------------------- */
+.about-statement-visible .about-word {
+  opacity: 1;
+
+  transform:
+    translateY(0);
+
+  filter: blur(0);
+}
+
+/* =========================================================
+   ABOUT — SUPPORTING CONTENT REVEAL
+   ========================================================= */
+
+.about-content-reveal {
+  opacity: 0;
+
+  transform:
+    translateY(18px);
+
+  filter: blur(4px);
+
+  transition:
+    opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-content-reveal.is-visible {
+  opacity: 1;
+
+  transform:
+    translateY(0);
+
+  filter: blur(0);
+}
+
+/* =========================================================
+   ABOUT — OUTLINE IDENTITY BUTTONS
+   Same visual language as "Read My Thoughts"
+   No glass / no backdrop blur
+   ========================================================= */
+
+.identity-outline-button {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.55rem;
+
+  min-height: 42px;
+
+  padding:
+    0.65rem
+    1rem;
+
+  border:
+    1px
+    solid
+    var(--border);
+
+  border-radius: 999px;
+
+  background:
+    var(--surface);
+
+  color:
+    var(--foreground);
+
+  font-size:
+    0.68rem;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    0.18em;
+
+  text-transform:
+    uppercase;
+
+  cursor:
+    default;
+
+  transition:
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.identity-outline-button:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--accent-primary) 55%,
+      var(--border)
+    );
+
+  background:
+    var(--surface-hover);
+
+  color:
+    var(--accent-primary);
+
+  box-shadow:
+    0 6px 20px
+    rgba(139, 92, 246, 0.08);
+}
+
+.identity-outline-button:active {
+  transform:
+    translateY(0)
+    scale(0.98);
+}
+
+.identity-outline-button:focus-visible {
+  outline:
+    2px
+    solid
+    var(--accent-primary);
+
+  outline-offset:
+    3px;
+}
+
+/* =========================================================
+   GENERAL HOVER UTILITY
+   ========================================================= */
+
+.hover-accent {
+  transition:
+    color 300ms ease,
+    border-color 300ms ease,
+    background-color 300ms ease,
+    transform 300ms ease;
+}
+
+.hover-accent:hover {
+  color: var(--accent-primary);
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -259,20 +508,68 @@ body {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+
+    scroll-behavior:
+      auto !important;
   }
 
   .animate-fade-in-up,
   .animate-flow-drift,
   .animate-flow-dash,
+  .animate-flow-dash-reverse,
   .animate-energy-pulse,
   .animate-soft-bounce {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
+    animation:
+      none !important;
+
+    opacity:
+      1 !important;
+
+    transform:
+      none !important;
+
+    filter:
+      none !important;
+  }
+
+  .about-word {
+    opacity:
+      1 !important;
+
+    transform:
+      none !important;
+
+    filter:
+      none !important;
+
+    transition:
+      none !important;
+  }
+
+  .about-content-reveal {
+    opacity:
+      1 !important;
+
+    transform:
+      none !important;
+
+    filter:
+      none !important;
+
+    transition:
+      none !important;
+  }
+
+  .identity-outline-button {
+    transition:
+      none !important;
   }
 }
