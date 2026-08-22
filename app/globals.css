@@ -12,24 +12,26 @@
 
   --accent-primary: #6d28d9;
   --accent-secondary: #4338ca;
+  --accent-glow: #7c3aed;
 
   --muted: #737373;
 }
 
 .dark {
-  --background: #050505;
+  --background: #030303;
   --foreground: #ededed;
 
-  --surface: #0f0f0f;
-  --surface-hover: #181818;
+  --surface: #0a0a0a;
+  --surface-hover: #141414;
 
-  --border: #242424;
-  --border-hover: #3a3a3a;
+  --border: #1f1f1f;
+  --border-hover: #333333;
 
   --accent-primary: #8b5cf6;
   --accent-secondary: #6366f1;
+  --accent-glow: #a78bfa;
 
-  --muted: #a3a3a3;
+  --muted: #8a8a8a;
 }
 
 @theme inline {
@@ -38,6 +40,10 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/* ---------------------------------
+   Base
+--------------------------------- */
 
 * {
   border-color: var(--border);
@@ -48,6 +54,7 @@ html {
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -59,13 +66,15 @@ body {
     border-color 300ms ease;
 }
 
-/* Selection */
 ::selection {
   background: var(--accent-primary);
   color: #ffffff;
 }
 
-/* Scrollbar */
+/* ---------------------------------
+   Scrollbar
+--------------------------------- */
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -83,13 +92,165 @@ body {
   background: var(--accent-primary);
 }
 
-/* Keyboard accessibility */
+/* ---------------------------------
+   Focus
+--------------------------------- */
+
 :focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 3px;
 }
 
-/* Reduced motion */
+/* =================================
+   HERO ANIMATIONS
+================================= */
+
+/* Staggered text reveal */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Large background drift */
+
+@keyframes flowDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  30% {
+    transform: translate3d(1.5%, 1%, 0) scale(1.01);
+  }
+
+  65% {
+    transform: translate3d(-1%, 2%, 0) scale(0.99);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-flow-drift {
+  animation: flowDrift 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Contour line movement */
+
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+.animate-flow-dash {
+  stroke-dasharray: 160 300;
+  animation: flowDash 38s linear infinite;
+  will-change: stroke-dashoffset;
+}
+
+/* Bright moving energy pulse */
+
+@keyframes energyPulse {
+  0% {
+    stroke-dashoffset: 1100;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.25;
+  }
+
+  45% {
+    opacity: 0.9;
+  }
+
+  80% {
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dashoffset: -1100;
+    opacity: 0;
+  }
+}
+
+.animate-energy-pulse {
+  stroke-dasharray: 180 920;
+  animation: energyPulse 14s linear infinite;
+  will-change: stroke-dashoffset, opacity;
+}
+
+/* Scroll indicator */
+
+@keyframes softBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-soft-bounce {
+  animation: softBounce 2.4s ease-in-out infinite;
+}
+
+/* Button light sweep */
+
+.btn-glow-effect {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-glow-effect::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -100%;
+  width: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 600ms ease;
+  pointer-events: none;
+}
+
+.btn-glow-effect:hover::before {
+  left: 100%;
+}
+
+/* Subtle pulse used for small light points */
+
+.animate-pulse {
+  animation-timing-function: ease-in-out;
+}
+
+/* ---------------------------------
+   Reduced motion
+--------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -103,134 +264,15 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-/* =========================================
-   MILESTONE 2 — HERO ANIMATIONS
-   ========================================= */
 
-/* Cinematic staggered reveal */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-    filter: blur(2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-.animate-fade-in-up {
-  opacity: 0;
-  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Subtle GIS contour-line movement */
-@keyframes flowDrift {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  33% {
-    transform: translate(1%, 1.5%) scale(1.01);
-  }
-
-  66% {
-    transform: translate(-0.5%, 2%) scale(0.99);
-  }
-
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-}
-
-@keyframes flowDash {
-  to {
-    stroke-dashoffset: -1000;
-  }
-}
-
-.animate-flow-drift {
-  animation: flowDrift 18s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-.animate-flow-dash {
-  stroke-dasharray: 100 250;
-  animation: flowDash 50s linear infinite;
-}
-
-/* Scroll indicator */
-@keyframes softBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(5px);
-  }
-}
-
-.animate-soft-bounce {
-  animation: softBounce 2.5s ease-in-out infinite;
-}
-
-/* Premium button glow */
-.btn-glow-effect {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-glow-effect::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.08),
-    transparent
-  );
-  transition: all 0.6s ease;
-}
-
-.btn-glow-effect:hover::before {
-  left: 100%;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
   .animate-flow-drift,
   .animate-flow-dash,
+  .animate-energy-pulse,
   .animate-soft-bounce {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
   }
-}
-@keyframes flowDashReverse {
-  to {
-    stroke-dashoffset: 1000;
-  }
-}
-
-.animate-flow-dash-reverse {
-  stroke-dasharray: 180 320;
-  animation: flowDashReverse 36s linear infinite;
-  will-change: stroke-dashoffset;
-}
-
-.animate-flow-dash {
-  stroke-dasharray: 180 320;
-  animation: flowDash 42s linear infinite;
-  will-change: stroke-dashoffset;
 }

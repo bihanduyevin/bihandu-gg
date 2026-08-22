@@ -12,8 +12,8 @@ const PHRASES = [
   "Digital Creator",
 ];
 
-const TYPING_SPEED = 70;
-const DELETING_SPEED = 35;
+const TYPING_SPEED = 75;
+const DELETING_SPEED = 38;
 const PAUSE_DURATION = 2200;
 
 export function TypingText() {
@@ -21,23 +21,25 @@ export function TypingText() {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     );
 
-    const updatePreference = () => {
+    const updateMotionPreference = () => {
       setIsReducedMotion(mediaQuery.matches);
     };
 
-    updatePreference();
+    updateMotionPreference();
 
-    mediaQuery.addEventListener("change", updatePreference);
+    mediaQuery.addEventListener("change", updateMotionPreference);
 
     return () => {
-      mediaQuery.removeEventListener("change", updatePreference);
+      mediaQuery.removeEventListener(
+        "change",
+        updateMotionPreference
+      );
     };
   }, []);
 
@@ -45,56 +47,58 @@ export function TypingText() {
     if (isReducedMotion) {
       setText("Developer & Creator");
       setIsDeleting(false);
-      setIsPaused(false);
-      return;
-    }
-
-    if (isPaused) {
       return;
     }
 
     const currentPhrase = PHRASES[phraseIndex];
 
-    const timer = window.setTimeout(() => {
-      if (!isDeleting) {
-        const nextText = currentPhrase.slice(0, text.length + 1);
+    if (!isDeleting && text === currentPhrase) {
+      const pauseTimer = window.setTimeout(() => {
+        setIsDeleting(true);
+      }, PAUSE_DURATION);
 
-        setText(nextText);
+      return () => window.clearTimeout(pauseTimer);
+    }
 
-        if (nextText === currentPhrase) {
-          setIsPaused(true);
+    const timer = window.setTimeout(
+      () => {
+        if (isDeleting) {
+          const nextText = currentPhrase.slice(0, text.length - 1);
 
-          window.setTimeout(() => {
-            setIsPaused(false);
-            setIsDeleting(true);
-          }, PAUSE_DURATION);
+          setText(nextText);
+
+          if (nextText.length === 0) {
+            setIsDeleting(false);
+            setPhraseIndex(
+              (current) => (current + 1) % PHRASES.length
+            );
+          }
+
+          return;
         }
 
-        return;
-      }
+        setText(currentPhrase.slice(0, text.length + 1));
+      },
+      isDeleting ? DELETING_SPEED : TYPING_SPEED
+    );
 
-      const nextText = currentPhrase.slice(0, text.length - 1);
-
-      setText(nextText);
-
-      if (nextText === "") {
-        setIsDeleting(false);
-        setPhraseIndex((current) => (current + 1) % PHRASES.length);
-      }
-    }, isDeleting ? DELETING_SPEED : TYPING_SPEED);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [text, phraseIndex, isDeleting, isReducedMotion, isPaused]);
+    return () => window.clearTimeout(timer);
+  }, [
+    text,
+    phraseIndex,
+    isDeleting,
+    isReducedMotion,
+  ]);
 
   return (
     <span className="inline-flex min-h-[1.5em] items-center">
-      <span className="text-[var(--foreground)]">{text}</span>
+      <span className="text-[var(--foreground)]">
+        {text}
+      </span>
 
       {!isReducedMotion && (
         <span
-          className="ml-[0.1em] h-[1.1em] w-[2px] bg-[var(--accent-primary)] opacity-70 animate-pulse"
+          className="ml-[0.12em] h-[1.1em] w-[2px] bg-[var(--accent-primary)] opacity-80 animate-pulse"
           aria-hidden="true"
         />
       )}
