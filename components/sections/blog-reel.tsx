@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Reveal } from "@/components/animation/reveal";
-import { blogPosts } from "@/lib/data/blog";
+import { getAllPosts } from "@/lib/mdx";
 
 function BlogImage({
   src,
@@ -28,6 +28,12 @@ function BlogImage({
 }
 
 export function BlogReel() {
+  const blogPosts = getAllPosts();
+
+  if (blogPosts.length === 0) {
+    return null;
+  }
+
   const featuredPost = blogPosts[0];
   const recentPosts = blogPosts.slice(1, 4);
 
@@ -73,7 +79,7 @@ export function BlogReel() {
         </div>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Featured article */}
+          {/* Featured */}
           <Reveal
             animation="scale-up"
             threshold={0.15}
@@ -118,7 +124,7 @@ export function BlogReel() {
             </Link>
           </Reveal>
 
-          {/* Recent posts */}
+          {/* Recent */}
           <div className="flex flex-col divide-y divide-[var(--border)] lg:col-span-5">
             {recentPosts.map((post, index) => (
               <Reveal
@@ -156,7 +162,6 @@ export function BlogReel() {
           </div>
         </div>
 
-        {/* Mobile CTA */}
         <Reveal
           animation="fade-up"
           delay={300}

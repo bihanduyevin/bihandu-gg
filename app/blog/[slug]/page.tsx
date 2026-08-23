@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
 import { Reveal } from "@/components/animation/reveal";
-import { blogPosts } from "@/lib/data/blog";
+import {
+  getAllPosts,
+  getPostBySlug,
+} from "@/lib/mdx";
 
 type BlogPostPageProps = {
   params: Promise<{
@@ -13,7 +17,9 @@ type BlogPostPageProps = {
 };
 
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
+  const posts = getAllPosts();
+
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }
@@ -23,14 +29,13 @@ export async function generateMetadata({
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const post = blogPosts.find(
-    (item) => item.slug === slug,
-  );
+  const post = getPostBySlug(slug);
 
   if (!post) {
     return {
       title: "Post Not Found | Bihandu.gg",
-      description: "The requested blog post could not be found.",
+      description:
+        "The requested blog post could not be found.",
     };
   }
 
@@ -40,30 +45,116 @@ export async function generateMetadata({
   };
 }
 
+const mdxComponents = {
+  h1: (props: React.ComponentProps<"h1">) => (
+    <h1
+      className="mb-6 mt-12 text-4xl font-bold tracking-tight text-[var(--foreground)]"
+      {...props}
+    />
+  ),
+
+  h2: (props: React.ComponentProps<"h2">) => (
+    <h2
+      className="mb-6 mt-12 border-b border-[var(--border)] pb-2 text-3xl font-bold tracking-tight text-[var(--foreground)]"
+      {...props}
+    />
+  ),
+
+  h3: (props: React.ComponentProps<"h3">) => (
+    <h3
+      className="mb-4 mt-8 text-2xl font-bold tracking-tight text-[var(--foreground)]"
+      {...props}
+    />
+  ),
+
+  p: (props: React.ComponentProps<"p">) => (
+    <p
+      className="mb-6 text-lg font-light leading-relaxed text-[var(--muted)]"
+      {...props}
+    />
+  ),
+
+  a: (props: React.ComponentProps<"a">) => (
+    <a
+      className="text-[var(--accent-primary)] underline-offset-4 transition-colors hover:underline"
+      {...props}
+    />
+  ),
+
+  ul: (props: React.ComponentProps<"ul">) => (
+    <ul
+      className="mb-6 list-disc space-y-2 pl-6 text-lg font-light text-[var(--muted)]"
+      {...props}
+    />
+  ),
+
+  ol: (props: React.ComponentProps<"ol">) => (
+    <ol
+      className="mb-6 list-decimal space-y-2 pl-6 text-lg font-light text-[var(--muted)]"
+      {...props}
+    />
+  ),
+
+  li: (props: React.ComponentProps<"li">) => (
+    <li
+      className="pl-1"
+      {...props}
+    />
+  ),
+
+  blockquote: (
+    props: React.ComponentProps<"blockquote">,
+  ) => (
+    <blockquote
+      className="my-8 border-l-4 border-[var(--accent-primary)] bg-[var(--surface)]/30 py-3 pl-6 text-xl italic text-[var(--foreground)]"
+      {...props}
+    />
+  ),
+
+  pre: (props: React.ComponentProps<"pre">) => (
+    <pre
+      className="mb-6 overflow-x-auto rounded-md border border-[var(--border)] bg-[var(--surface)] p-5 text-sm text-[var(--muted)]"
+      {...props}
+    />
+  ),
+
+  code: (props: React.ComponentProps<"code">) => (
+    <code
+      className="rounded-sm bg-[var(--surface)] px-1.5 py-0.5 text-sm text-[var(--accent-primary)]"
+      {...props}
+    />
+  ),
+
+  img: (props: React.ComponentProps<"img">) => (
+    <img
+      className="my-8 h-auto w-full rounded-sm border border-[var(--border)]"
+      alt={props.alt ?? "Blog image"}
+      {...props}
+    />
+  ),
+};
+
 export default async function BlogPostPage({
   params,
 }: BlogPostPageProps) {
   const { slug } = await params;
 
-  const post = blogPosts.find(
-    (item) => item.slug === slug,
-  );
+  const post = getPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  const relatedPosts = blogPosts
+  const allPosts = getAllPosts();
+
+  const relatedPosts = allPosts
     .filter((item) => item.id !== post.id)
     .slice(0, 2);
 
   return (
     <main className="min-h-screen pt-24 pb-32">
       <article className="mx-auto max-w-7xl px-5 sm:px-6">
-        {/* =====================================================
-            BACK TO BLOG
-            ===================================================== */}
-
+        {/* Back navigation */}
         <Reveal animation="fade-right">
           <Link
             href="/blog"
@@ -79,10 +170,7 @@ export default async function BlogPostPage({
           </Link>
         </Reveal>
 
-        {/* =====================================================
-            ARTICLE HEADER
-            ===================================================== */}
-
+        {/* Header */}
         <header className="mx-auto mb-16 max-w-4xl text-center md:mb-24">
           <Reveal animation="fade-up">
             <div className="mb-8 flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
@@ -119,10 +207,7 @@ export default async function BlogPostPage({
           </Reveal>
         </header>
 
-        {/* =====================================================
-            ARTICLE IMAGE
-            ===================================================== */}
-
+        {/* Hero image */}
         <Reveal
           animation="scale-up"
           delay={300}
@@ -137,41 +222,23 @@ export default async function BlogPostPage({
           </div>
         </Reveal>
 
-        {/* =====================================================
-            PLACEHOLDER ARTICLE BODY
-            ===================================================== */}
-
+        {/* MDX */}
         <div className="mx-auto max-w-3xl">
           <Reveal
             animation="fade-up"
-            threshold={0.2}
+            threshold={0.15}
           >
-            <div className="relative overflow-hidden rounded-sm border border-dashed border-[var(--border-hover)] bg-[var(--surface)]/30 p-10 text-center md:p-16">
-              <div
-                className="bg-spatial-grid pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-                aria-hidden="true"
+            <div className="prose-container">
+              <MDXRemote
+                source={post.content}
+                components={mdxComponents}
               />
-
-              <div className="relative z-10">
-                <p className="mb-4 text-lg font-medium text-[var(--foreground)] md:text-xl">
-                  This article is a placeholder.
-                </p>
-
-                <p className="mx-auto max-w-md text-sm leading-6 text-[var(--muted)] md:text-base">
-                  Replace this content when the real post is written.
-                  Eventually, this section will render your actual
-                  Markdown/MDX article content.
-                </p>
-              </div>
             </div>
           </Reveal>
         </div>
       </article>
 
-      {/* =====================================================
-          RELATED POSTS
-          ===================================================== */}
-
+      {/* Related */}
       {relatedPosts.length > 0 && (
         <section className="mx-auto mt-32 max-w-7xl border-t border-[var(--border)] px-5 pt-16 sm:px-6 md:mt-40">
           <Reveal animation="fade">
