@@ -13,11 +13,22 @@ function BlogImage({
 }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_60%_35%,rgba(99,102,241,0.18),transparent_35%),linear-gradient(135deg,#0b0b0f,#030303)]">
-      <img
-        src={src}
-        alt={alt}
-        className="h-full w-full object-cover grayscale-[25%] transition-all duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
-      />
+      {src ? (
+        <img
+          src={src}
+          alt={alt}
+          className="h-full w-full object-cover grayscale-[25%] transition-all duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
+        />
+      ) : (
+        <div
+          className="flex h-full w-full items-center justify-center"
+          aria-label="No image available"
+        >
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">
+            No Image
+          </span>
+        </div>
+      )}
 
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"
@@ -79,7 +90,7 @@ export function BlogReel() {
         </div>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Featured */}
+          {/* Featured post */}
           <Reveal
             animation="scale-up"
             threshold={0.15}
@@ -124,7 +135,7 @@ export function BlogReel() {
             </Link>
           </Reveal>
 
-          {/* Recent */}
+          {/* Recent posts */}
           <div className="flex flex-col divide-y divide-[var(--border)] lg:col-span-5">
             {recentPosts.map((post, index) => (
               <Reveal
@@ -162,6 +173,7 @@ export function BlogReel() {
           </div>
         </div>
 
+        {/* Mobile CTA */}
         <Reveal
           animation="fade-up"
           delay={300}
