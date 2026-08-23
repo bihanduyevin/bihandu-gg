@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+} from "lucide-react";
 
 import { Reveal } from "@/components/animation/reveal";
+import { PageVideoBackground } from "@/components/ui/page-video-background";
 import { getAllPosts } from "@/lib/mdx";
 
 export const metadata: Metadata = {
@@ -11,13 +15,46 @@ export const metadata: Metadata = {
     "Thoughts, notes, experiments, and observations about technology, GIS, urban planning, photography, and more.",
 };
 
+function BlogImage({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_60%_35%,rgba(99,102,241,0.18),transparent_35%),linear-gradient(135deg,#0b0b0f,#030303)]">
+      {src ? (
+        <img
+          src={src}
+          alt={alt}
+          className="h-full w-full object-cover grayscale-[25%] transition-all duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">
+            No Image
+          </span>
+        </div>
+      )}
+
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
+
 export default function BlogPage() {
   const blogPosts = getAllPosts();
 
   if (blogPosts.length === 0) {
     return (
-      <main className="min-h-screen pt-32 pb-32">
-        <div className="mx-auto max-w-7xl px-5 text-center sm:px-6">
+      <main className="relative min-h-screen overflow-hidden pt-32 pb-32">
+        <PageVideoBackground />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-5 text-center sm:px-6">
           <Reveal animation="fade-up">
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-[var(--accent-primary)]">
               Blog
@@ -28,8 +65,11 @@ export default function BlogPage() {
             </h1>
 
             <p className="mx-auto mt-4 max-w-md text-[var(--muted)]">
-              Create an `.mdx` file inside `content/blog/` to
-              publish your first post.
+              Create an MDX file inside
+              <code className="mx-1 rounded bg-[var(--surface)] px-1.5 py-0.5 text-[var(--accent-primary)]">
+                content/blog/
+              </code>
+              to publish your first post.
             </p>
           </Reveal>
         </div>
@@ -41,8 +81,10 @@ export default function BlogPage() {
   const allNotes = blogPosts.slice(1);
 
   return (
-    <main className="min-h-screen pt-24 pb-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-6">
+    <main className="relative min-h-screen overflow-hidden pt-24 pb-32">
+      <PageVideoBackground />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-6">
         {/* Header */}
         <header className="border-b border-[var(--border)] py-16 md:py-24">
           <Reveal animation="fade">
@@ -51,21 +93,15 @@ export default function BlogPage() {
             </p>
           </Reveal>
 
-          <Reveal
-            delay={100}
-            animation="fade-up"
-          >
+          <Reveal delay={100} animation="fade-up">
             <h1 className="mb-8 text-[clamp(3rem,6vw,6rem)] font-bold leading-[0.9] tracking-[-0.055em] text-[var(--foreground)]">
-              THOUGHTS / SIGNALS /{" "}
+              THOUGHTS / SIGNALS /
               <br className="hidden md:block" />
               NOTES.
             </h1>
           </Reveal>
 
-          <Reveal
-            delay={200}
-            animation="fade-up"
-          >
+          <Reveal delay={200} animation="fade-up">
             <p className="max-w-2xl text-lg font-light leading-relaxed text-[var(--muted)] md:text-xl">
               This is where I document my process. A collection of
               writings on technology, spatial data, urban exploration,
@@ -91,17 +127,15 @@ export default function BlogPage() {
               className="group block"
             >
               <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
-                <div className="relative aspect-[16/9] overflow-hidden border border-[var(--border)] bg-[var(--surface)] transition-colors duration-500 group-hover:border-[var(--accent-primary)]/50 lg:col-span-8">
-                  <img
+                <div className="relative aspect-[16/9] overflow-hidden border border-[var(--border)] bg-[var(--surface)]/70 backdrop-blur-[2px] transition-colors duration-500 group-hover:border-[var(--accent-primary)]/50 lg:col-span-8">
+                  <BlogImage
                     src={featuredPost.imageUrl}
                     alt={featuredPost.title}
-                    className="h-full w-full object-cover grayscale-[20%] transition-all duration-1000 ease-out group-hover:scale-105 group-hover:grayscale-0"
                   />
 
-                  <div
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
-                    aria-hidden="true"
-                  />
+                  <div className="absolute left-5 top-5 z-10 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-md">
+                    Featured
+                  </div>
                 </div>
 
                 <div className="lg:col-span-4">
@@ -184,7 +218,6 @@ export default function BlogPage() {
                         </span>
 
                         <span aria-hidden="true">•</span>
-
                         <span>{post.date}</span>
 
                         <span
@@ -210,10 +243,9 @@ export default function BlogPage() {
 
                     <div className="mt-2 flex items-center justify-between gap-8 md:mt-0 md:justify-end">
                       <div className="h-24 w-24 shrink-0 overflow-hidden border border-[var(--border)] transition-colors duration-500 group-hover:border-[var(--accent-primary)]/50 md:h-32 md:w-32">
-                        <img
+                        <BlogImage
                           src={post.imageUrl}
                           alt={post.title}
-                          className="h-full w-full object-cover grayscale-[60%] transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
                         />
                       </div>
 

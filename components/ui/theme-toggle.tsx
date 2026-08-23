@@ -1,43 +1,47 @@
 "use client";
 
-import * as React from "react";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@wrksz/themes/client";
+import {
+  Moon,
+  Sun,
+} from "lucide-react";
+
+import { useTheme } from "@/components/theme-provider";
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
+  const {
+    theme,
+    toggleTheme,
+  } = useTheme();
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div
-        className="h-9 w-9 rounded-md border border-[var(--border)] bg-[var(--surface)]"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  const isDark = resolvedTheme === "dark";
+  const isDark = theme === "dark";
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={toggleTheme}
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]"
+      aria-label={
+        isDark
+          ? "Switch to light mode"
+          : "Switch to dark mode"
+      }
     >
       {isDark ? (
-        <Sun className="h-[1.1rem] w-[1.1rem]" />
+        <Sun
+          size={17}
+          aria-hidden="true"
+        />
       ) : (
-        <Moon className="h-[1.1rem] w-[1.1rem]" />
+        <Moon
+          size={17}
+          aria-hidden="true"
+        />
       )}
 
       <span className="sr-only">
-        {isDark ? "Switch to light mode" : "Switch to dark mode"}
+        {isDark
+          ? "Switch to light mode"
+          : "Switch to dark mode"}
       </span>
     </button>
   );
